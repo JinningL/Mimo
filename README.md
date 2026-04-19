@@ -8,6 +8,9 @@ It sits on your desktop, reacts to clicks and mouse movement, can be dragged aro
 
 - Transparent desktop pet window
 - Click, double-click, drag, and right-click interactions
+- Drag Mimo into the bottom-right sleep corner to tuck it in
+- Clear drag feedback with a highlighted sleep drop zone
+- Cute drop animation when you let go
 - Multiple emotions and unlockable personas
 - Saved position and pet state between sessions
 
@@ -54,6 +57,14 @@ npm run preview
 ```
 
 Preview the production build.
+
+## Controls
+
+- Click to get a reaction
+- Double-click to trigger the folder-eating gag
+- Drag to move Mimo around the desktop
+- Drag into the bottom-right corner and release to make Mimo sleep
+- Right-click to open the context menu
 
 ## Notes
 

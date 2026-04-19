@@ -13,6 +13,7 @@ const BORED_MS         = 2 * 60 * 1000
 const SLEEPY_MS        = 5 * 60 * 1000
 const SLEEP_MS         = 8 * 60 * 1000
 const APPROACH_STOP_PX = 65
+const EDGE_PAD         = 10
 
 // ── Persona unlock conditions (checked every 10 s) ──────────────────────────
 const UNLOCK_CONDITIONS: Array<{ persona: PetPersona; check: (s: PetState) => boolean }> = [
@@ -33,6 +34,13 @@ function timeEmotion(): PetEmotion {
 
 // ── Message picker ───────────────────────────────────────────────────────────
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)] }
+
+function sleepCornerTarget(screenW: number, screenH: number) {
+  return {
+    x: Math.max(EDGE_PAD, screenW - PET_W - EDGE_PAD),
+    y: Math.max(EDGE_PAD, screenH - PET_H - EDGE_PAD),
+  }
+}
 
 // ── Build initial state ──────────────────────────────────────────────────────
 function buildInitial(
@@ -170,13 +178,60 @@ export function usePetState(
       action:        'idle',
       walkTarget:    null,
       approachTarget:null,
-      session:       { ...prev.session, totalDrags: prev.session.totalDrags + 1 },
     }))
   }, [])
 
   const onDragStart = useCallback(() => {
+    const now = Date.now()
+    cornerTarget.current = null
+    clearTimeout(reactionTimer.current)
+    clearInterval(hoverRef.current.timer)
+    hoverRef.current.seconds = 0
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+
+    setState(prev => ({
+      ...prev,
+      action:         'idle',
+      emotion:        prev.action === 'sleeping' ? 'happy' : prev.emotion,
+      walkTarget:     null,
+      approachTarget: null,
+      lastInteraction: now,
+      session:        { ...prev.session, totalDrags: prev.session.totalDrags + 1 },
+    }))
     sayFor('drag')
   }, [sayFor])
+
+  const onDragEnd = useCallback((x: number, y: number, sleepDrop: boolean) => {
+    const now = Date.now()
+
+    cornerTarget.current = null
+
+    if (sleepDrop) {
+      const cfg = PERSONAS[stateRef.current.persona]
+      say(pick(cfg.messages.pillow), 2600)
+
+      setState(prev => ({
+        ...prev,
+        position:      sleepCornerTarget(screenW, screenH),
+        action:        'sleeping',
+        emotion:       'sleepy',
+        walkTarget:    null,
+        approachTarget:null,
+        lastInteraction: now,
+      }))
+      return
+    }
+
+    setState(prev => ({
+      ...prev,
+      position:      { x, y },
+      action:        'idle',
+      emotion:       timeEmotion(),
+      walkTarget:    null,
+      approachTarget:null,
+      lastInteraction: now,
+    }))
+  }, [say, screenW, screenH])
 
   // ── Mouse proximity callbacks (called from Pet.tsx) ───────────────────────
   const handleMouseNear = useCallback(() => {
@@ -283,11 +338,12 @@ export function usePetState(
 
         // Walk to nearest corner and sleep when idle long enough
         if (idle >= SLEEP_MS && s.action === 'idle' && cornerTarget.current === null) {
+          const bottomRight = sleepCornerTarget(screenW, screenH)
           const corners = [
-            { x: 10,                    y: 10 },
-            { x: screenW - PET_W - 10,  y: 10 },
-            { x: 10,                    y: screenH - PET_H - 10 },
-            { x: screenW - PET_W - 10,  y: screenH - PET_H - 10 },
+            { x: EDGE_PAD, y: EDGE_PAD },
+            { x: bottomRight.x, y: EDGE_PAD },
+            { x: EDGE_PAD, y: bottomRight.y },
+            bottomRight,
           ]
           const nearest = corners.reduce((a, b) =>
             Math.hypot(a.x - prev.position.x, a.y - prev.position.y) <=
@@ -454,6 +510,7 @@ export function usePetState(
     handleDoubleClick,
     drag,
     onDragStart,
+    onDragEnd,
     handleMouseNear,
     handleMouseFar,
     handleMouseIdleNear,
