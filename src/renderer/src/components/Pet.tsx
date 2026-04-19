@@ -371,7 +371,7 @@ export default function Pet({ screenWidth, screenHeight, initialX, initialY, sav
           style={{
             position: 'fixed',
             left: Math.max(0, state.position.x - 10),
-            top: Math.max(0, state.position.y + 28),
+            top: Math.max(0, state.position.y + 25),
             width: SLEEP_NEST_W,
             height: SLEEP_NEST_H,
             pointerEvents: 'none',
