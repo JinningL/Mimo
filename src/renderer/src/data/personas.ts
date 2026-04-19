@@ -17,6 +17,7 @@ export interface PersonaConfig {
     mouseNear:   string[]
     snack:       string[]
     pillow:      string[]
+    sleepTalk:   string[]
     crown:       string[]
     eat:         string[]
     burp:        string[]
@@ -39,6 +40,7 @@ const PERSONAS: Record<PetPersona, PersonaConfig> = {
       mouseNear: ['Hmm? 👀', '...sniff', 'Oh! Hi!', '*perks up*'],
       snack:     ['🍎 Yesss!!', 'Om nom nom!', 'Snack time! 🎉'],
       pillow:    ['💤 Nap time~', 'Oink... zzz', 'So comfy...'],
+      sleepTalk: ['...tiny apple...', 'zz... warm mud...', '*sleepy oink*', 'five more minutes...'],
       crown:     ['👑 I am king!', 'Royal oink!', 'Bow before me~'],
       eat:       ['Om nom nom!', '*chomp chomp*', 'Folder = snack?'],
       burp:      ['*BURP* 💨', 'Delicious data!', 'Oink. *pats belly*'],
@@ -61,6 +63,7 @@ const PERSONAS: Record<PetPersona, PersonaConfig> = {
       mouseNear: ['...zzz', 'hm?', '*barely opens eye*'],
       snack:     ['zz... nom?', '*eats half asleep*', 'oh food... zzz'],
       pillow:    ['Finally... zzz', 'My precious...', '*immediately naps*'],
+      sleepTalk: ['...zz... blanket...', 'no alarm... please...', '*soft snore*', 'mmm... cozy...'],
       crown:     ['...king? sure... zzz', '*naps in crown*'],
       eat:       ['Nom... zzz', '*sleepy chomp*', 'Zz nom nom...'],
       burp:      ['...urp', '*sleepy burp* zzz', 'Oink... zzz'],
@@ -83,6 +86,7 @@ const PERSONAS: Record<PetPersona, PersonaConfig> = {
       mouseNear: ['I SEE YOU!', 'HI HI HI!', 'FRIEND!!', '👀👀👀'],
       snack:     ['SNACK ATTACK!', 'CONSUMED!', 'INHALED!', 'GONE!'],
       pillow:    ['NO TIME FOR SLEEP!', 'CHAOS NEVER RESTS!', 'PILLOW FIGHT!'],
+      sleepTalk: ['...MORE LASERS...', 'ZZZ OF CHAOS!', 'I AM SPEED... zzz', '*tiny battle noises*'],
       crown:     ['CHAOS KING!', 'ALL HAIL OINK!', 'UNLIMITED POWER!'],
       eat:       ['CHOMP CHOMP CHOMP!', 'DIGITAL FEAST!', 'FOLDER DESTROYED!'],
       burp:      ['BELCH OF POWER!', '*MEGA BURP*', 'THE CHAOS BURP!'],
@@ -105,6 +109,7 @@ const PERSONAS: Record<PetPersona, PersonaConfig> = {
       mouseNear: ['...hi', '*peeks*', 'oh... hello', '...it sees me'],
       snack:     ['...thank you', '*tiny bite*', 'o-oh, snack?'],
       pillow:    ['...safe here', '*hides under pillow*', 'o-okay...'],
+      sleepTalk: ['...don’t look at me...', '...tiny oink...', '*sleepy mumble*', '...is it morning yet...'],
       crown:     ['m-me?', '...I am not worthy', '*blushes oink*'],
       eat:       ['...nom?', '*quiet chomp*', 'o-okay...'],
       burp:      ['e-excuse me...', '*mortified oink*', 'sorrysorrysorry'],
@@ -127,6 +132,7 @@ const PERSONAS: Record<PetPersona, PersonaConfig> = {
       mouseNear: ['You... came for me?', 'I sensed your presence.', '*meaningful eye contact*'],
       snack:     ['A gift? For MEEEE?', '*eats theatrically*', 'This... changes everything.'],
       pillow:    ['At last... rest.', 'The drama never sleeps.', '*collapses dramatically*'],
+      sleepTalk: ['...my final monologue...', '*dramatic snore*', 'the spotlight... mine...', 'bravo... zzz...'],
       crown:     ['AS IT SHOULD BE.', 'Finally. Recognition.', 'I was BORN for this.'],
       eat:       ['*eats passionately*', 'Even eating... is an art.', 'Delicieux!'],
       burp:      ['*burps with flair*', 'Even THAT was beautiful.', 'A natural phenomenon.'],

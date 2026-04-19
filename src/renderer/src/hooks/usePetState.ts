@@ -14,6 +14,8 @@ const SLEEPY_MS        = 5 * 60 * 1000
 const SLEEP_MS         = 8 * 60 * 1000
 const APPROACH_STOP_PX = 65
 const EDGE_PAD         = 10
+const DREAM_TALK_MIN_MS = 7000
+const DREAM_TALK_MAX_MS = 15000
 
 // ── Persona unlock conditions (checked every 10 s) ──────────────────────────
 const UNLOCK_CONDITIONS: Array<{ persona: PetPersona; check: (s: PetState) => boolean }> = [
@@ -37,8 +39,8 @@ function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length
 
 function sleepCornerTarget(screenW: number, screenH: number) {
   return {
-    x: Math.max(EDGE_PAD, screenW - PET_W - EDGE_PAD),
-    y: Math.max(EDGE_PAD, screenH - PET_H - EDGE_PAD),
+    x: Math.max(EDGE_PAD, screenW - PET_W - 34),
+    y: Math.max(EDGE_PAD, screenH - PET_H - 26),
   }
 }
 
@@ -303,6 +305,31 @@ export function usePetState(
     window.mimo.onNextPersona(cyclePersona)
   }, [cyclePersona])
 
+  // ── Sleep talk scheduler ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (state.action !== 'sleeping') return
+
+    let timer: ReturnType<typeof setTimeout> | undefined
+
+    const schedule = () => {
+      const delay = DREAM_TALK_MIN_MS + Math.random() * (DREAM_TALK_MAX_MS - DREAM_TALK_MIN_MS)
+      timer = setTimeout(() => {
+        const s = stateRef.current
+        if (s.action !== 'sleeping') return
+
+        if (!s.messageVisible) {
+          const cfg = PERSONAS[s.persona]
+          say(pick(cfg.messages.sleepTalk), 2200)
+        }
+
+        schedule()
+      }, delay)
+    }
+
+    schedule()
+    return () => clearTimeout(timer)
+  }, [state.action, say])
+
   // ── Persona unlock checker ────────────────────────────────────────────────
   useEffect(() => {
     const interval = setInterval(() => {
@@ -341,8 +368,8 @@ export function usePetState(
           const bottomRight = sleepCornerTarget(screenW, screenH)
           const corners = [
             { x: EDGE_PAD, y: EDGE_PAD },
-            { x: bottomRight.x, y: EDGE_PAD },
-            { x: EDGE_PAD, y: bottomRight.y },
+            { x: screenW - PET_W - EDGE_PAD, y: EDGE_PAD },
+            { x: EDGE_PAD, y: screenH - PET_H - EDGE_PAD },
             bottomRight,
           ]
           const nearest = corners.reduce((a, b) =>

@@ -14,6 +14,8 @@ const DRAG_START_PX = 6
 const SLEEP_ZONE_W  = 176
 const SLEEP_ZONE_H  = 176
 const SLEEP_ZONE_GAP = 18
+const SLEEP_NEST_W  = 156
+const SLEEP_NEST_H  = 92
 
 interface Props {
   screenWidth:  number
@@ -85,6 +87,9 @@ export default function Pet({ screenWidth, screenHeight, initialX, initialY, sav
   }, [])
 
   const sleepZoneHot = dragging && isSleepDropPosition(state.position.x, state.position.y)
+  const sleepingInCorner = !dragging
+    && state.action === 'sleeping'
+    && isSleepDropPosition(state.position.x, state.position.y)
 
   // ── Mouse passthrough + proximity detection ────────────────────────────
   useEffect(() => {
@@ -285,16 +290,131 @@ export default function Pet({ screenWidth, screenHeight, initialX, initialY, sav
         >
           <div
             style={{
+              position: 'absolute',
+              left: 18,
+              right: 18,
+              bottom: 18,
+              height: 56,
+              borderRadius: 999,
+              background: sleepZoneHot
+                ? 'linear-gradient(180deg, rgba(255, 221, 232, 0.98), rgba(255, 188, 210, 0.96))'
+                : 'linear-gradient(180deg, rgba(255, 247, 250, 0.98), rgba(249, 222, 232, 0.92))',
+              border: `3px solid ${sleepZoneHot ? 'rgba(199, 81, 124, 0.9)' : 'rgba(188, 153, 167, 0.8)'}`,
+              boxShadow: sleepZoneHot
+                ? 'inset 0 10px 14px rgba(255,255,255,0.55), 0 10px 18px rgba(163, 78, 115, 0.18)'
+                : 'inset 0 10px 14px rgba(255,255,255,0.7), 0 8px 14px rgba(120, 94, 108, 0.12)',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              right: 28,
+              bottom: 50,
+              width: 64,
+              height: 36,
+              borderRadius: 18,
+              background: sleepZoneHot
+                ? 'linear-gradient(180deg, rgba(255, 243, 247, 1), rgba(255, 228, 236, 0.96))'
+                : 'linear-gradient(180deg, rgba(255,255,255,1), rgba(248, 239, 242, 0.96))',
+              border: '3px solid rgba(255,255,255,0.95)',
+              boxShadow: '0 4px 10px rgba(133, 93, 107, 0.14)',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              left: 26,
+              top: 22,
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: 10,
+              color: sleepZoneHot ? '#b04d77' : '#b88ba0',
+              opacity: sleepZoneHot ? 0.95 : 0.75,
+              animation: 'sleep-star-twinkle 1.4s ease-in-out infinite',
+            }}
+          >
+            *
+          </div>
+          <div
+            style={{
+              position: 'absolute',
+              left: 50,
+              top: 40,
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: 8,
+              color: sleepZoneHot ? '#c56a91' : '#cfb1bf',
+              opacity: 0.82,
+              animation: 'sleep-star-twinkle 1.7s ease-in-out infinite 0.35s',
+            }}
+          >
+            *
+          </div>
+          <div
+            style={{
               fontFamily: '"Press Start 2P", monospace',
               fontSize: 11,
               lineHeight: 1.7,
               color: sleepZoneHot ? '#8a3657' : '#7f5f6c',
               textTransform: 'uppercase',
+              position: 'relative',
+              zIndex: 1,
             }}
           >
             <div style={{ marginBottom: 12, fontSize: 12 }}>zzz</div>
             <div>{sleepZoneHot ? 'release to snooze' : 'drag here to sleep'}</div>
           </div>
+        </div>
+      )}
+
+      {sleepingInCorner && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'fixed',
+            left: Math.max(0, state.position.x - 10),
+            top: Math.max(0, state.position.y + 28),
+            width: SLEEP_NEST_W,
+            height: SLEEP_NEST_H,
+            pointerEvents: 'none',
+            zIndex: 0,
+            filter: 'drop-shadow(0 16px 18px rgba(109, 74, 88, 0.16))',
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '34px 34px 40px 40px',
+              background: 'linear-gradient(180deg, rgba(255, 238, 244, 0.97), rgba(250, 217, 228, 0.95))',
+              border: '3px solid rgba(226, 171, 192, 0.95)',
+              boxShadow: 'inset 0 12px 16px rgba(255,255,255,0.52)',
+              animation: 'sleep-nest-glow 2.8s ease-in-out infinite',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              left: 14,
+              right: 14,
+              bottom: 12,
+              height: 34,
+              borderRadius: 999,
+              background: 'repeating-linear-gradient(135deg, rgba(255,255,255,0.32) 0 10px, rgba(244, 190, 211, 0.42) 10px 20px)',
+              border: '2px solid rgba(225, 168, 190, 0.76)',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              right: 16,
+              top: 10,
+              width: 58,
+              height: 30,
+              borderRadius: 18,
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.98), rgba(253, 240, 245, 0.96))',
+              border: '3px solid rgba(244, 228, 235, 0.98)',
+              boxShadow: '0 5px 10px rgba(148, 107, 121, 0.12)',
+            }}
+          />
         </div>
       )}
 
@@ -304,10 +424,43 @@ export default function Pet({ screenWidth, screenHeight, initialX, initialY, sav
       />
 
       {/* relative container so accessories can be absolutely positioned */}
-      <div style={{ position: 'relative', width: 128, height: 128 }}>
+      <div style={{ position: 'relative', width: 128, height: 128, zIndex: 1 }}>
         <EatFolder active={state.action === 'eating'} facingRight={state.facingRight} />
 
         <Accessory type={state.accessory} phase={state.accessoryPhase} />
+
+        {sleepingInCorner && !state.messageVisible && (
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              left: 88,
+              top: -24,
+              pointerEvents: 'none',
+              zIndex: 2,
+            }}
+          >
+            {[
+              { char: 'Z',  size: 16, delay: '0s' },
+              { char: 'z',  size: 12, delay: '0.3s' },
+              { char: 'z',  size: 10, delay: '0.6s' },
+            ].map(({ char, size, delay }, idx) => (
+              <div
+                key={`${char}-${idx}`}
+                style={{
+                  fontFamily: '"Press Start 2P", monospace',
+                  fontSize: size,
+                  lineHeight: 1,
+                  color: idx === 0 ? '#b35a84' : '#d28aa8',
+                  marginBottom: idx === 2 ? 0 : 2,
+                  animation: `sleep-zzz-float 2.2s ease-in-out infinite ${delay}`,
+                }}
+              >
+                {char}
+              </div>
+            ))}
+          </div>
+        )}
 
         {(dragging || dropAnimation) && (
           <div
