@@ -4,6 +4,8 @@ Mimo is a small desktop pixel pet built with Electron, React, and TypeScript.
 
 It sits on your desktop, reacts to clicks and mouse movement, can be dragged around, and remembers its last saved state.
 
+![Mimo preview](./image.png)
+
 ## Features
 
 - Transparent desktop pet window
